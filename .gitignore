@@ -1,0 +1,14 @@
+# secrets (STAGE 3, 6.4 et 6.5)
+.env
+.env.*
+!.env.example
+
+# Node / Next.js
+node_modules/
+frontend/.next/
+frontend/out/
+npm-debug.log*
+yarn-error.log*
+
+# système
+.DS_Store
