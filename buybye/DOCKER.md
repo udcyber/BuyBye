@@ -10,7 +10,7 @@ cp .env.example .env
 
 `.env` ne se commit pas.
 
-## Dans Ubuntu (pour Rawan) :
+## Dans Ubuntu :
 Les volumes restent dans `docker-compose.yml`.
 Un fichier modifié est vu par le site, la mise à jour est automatique.
 
@@ -18,7 +18,7 @@ Un fichier modifié est vu par le site, la mise à jour est automatique.
 docker compose up --build
 ```
 
-## Dans PowerShell (pour Ulysse)
+## Dans PowerShell
 La mise à jour n'est pas automatique.  
 Avant de lancer, enlever ces lignes sous `app` :
 
