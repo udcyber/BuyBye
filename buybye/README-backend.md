@@ -14,6 +14,24 @@ Le backend est dans le projet Next.js. Il n'y a pas de second serveur.
 
 `src/app/api/` n'est pas le backend général. Il est réservé à l'authentification, plus une petite route de test.
 
+## Endpoints
+
+Les modifications passent par des Server Actions, pas par des URLs.
+
+`auth.actions.ts` : inscription, connexion, déconnexion.
+`produit.actions.ts` : créer, modifier, supprimer un produit.
+`achat.actions.ts` : ajouter, modifier, retirer un achat.
+`envie.actions.ts` : ajouter, retirer une envie.
+
+Les lectures passent par des services, appelés par les pages.
+
+`produit.service.ts` : liste et détail des produits.
+`catalogue.service.ts` : catalogue.
+`stats.service.ts` : chiffres du dashboard.
+`reference.service.ts` : familles, catégories, types.
+
+Une seule route HTTP est prévue : `src/app/api/auth/[...nextauth]/route.ts`, pour la session. Pas de route produit, achat ou envie.
+
 ## Règle
 
 Une page affiche. Une action modifie. Un service lit. Prisma écrit dans PostgreSQL.
