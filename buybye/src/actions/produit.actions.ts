@@ -2,14 +2,16 @@
 
 import { revalidatePath } from "next/cache";
 import { produits } from "@/lib/mocks";
+import { validerProduit } from "@/lib/validations";
 
 export async function creerProduit(formData: FormData) {
   const nom = String(formData.get("nom") ?? "").trim();
   const prixTexte = String(formData.get("prix") ?? "").trim();
   const prix = Number(prixTexte);
+  const erreur = validerProduit(nom, prixTexte);
 
-  if (!nom || !prixTexte || Number.isNaN(prix)) {
-    return { error: "Nom et prix obligatoires" };
+  if (erreur) {
+    return { error: erreur };
   }
 
   produits.push({
@@ -24,10 +26,12 @@ export async function creerProduit(formData: FormData) {
 export async function modifierProduit(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   const nom = String(formData.get("nom") ?? "").trim();
-  const prix = Number(formData.get("prix"));
+  const prixTexte = String(formData.get("prix") ?? "").trim();
+  const prix = Number(prixTexte);
   const produit = produits.find((item) => item.id === id);
+  const erreur = validerProduit(nom, prixTexte);
 
-  if (!produit || !nom || Number.isNaN(prix)) {
+  if (!produit || erreur) {
     return;
   }
 
