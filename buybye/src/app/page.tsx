@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { TestApiButton } from "@/components/TestApiButton";
 import { lireProduits } from "@/services/produit.service";
+import { creerProduit } from "@/actions/produit.actions";
 
 export default function Home() {
   const produits = lireProduits();
@@ -31,6 +32,11 @@ export default function Home() {
                 </li>
             ))}
             </ul> 
+            <form action={creerProduit}>
+            <input name="nom" placeholder="Nom" />
+            <input name="prix" type="number" step="0.01" placeholder="Prix" />
+            <button type="submit">Ajouter</button>
+            </form>
           <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
             Looking for a starting point or more instructions? Head over to{" "}
             <a
