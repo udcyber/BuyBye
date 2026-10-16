@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { TestApiButton } from "@/components/TestApiButton";
 import { lireProduits } from "@/services/produit.service";
-import { creerProduit } from "@/actions/produit.actions";
+import { creerProduit, modifierProduit, supprimerProduit } from "@/actions/produit.actions";
 
 export default function Home() {
   const produits = lireProduits();
@@ -29,6 +29,16 @@ export default function Home() {
             {produits.map((produit) => (
                 <li key={produit.id}>
                 {produit.nom} — {produit.prix} €
+                <form action={modifierProduit}>
+                    <input type="hidden" name="id" value={produit.id} />
+                    <input name="nom" defaultValue={produit.nom} />
+                    <input name="prix" type="number" step="0.01" defaultValue={produit.prix} />
+                    <button type="submit">Modifier</button>
+                </form>
+                <form action={supprimerProduit}>
+                    <input type="hidden" name="id" value={produit.id} />
+                    <button type="submit">Supprimer</button>
+                </form>
                 </li>
             ))}
             </ul> 
