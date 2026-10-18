@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Produit } from "@/types";
+import { creerProduit, modifierProduit } from "@/actions/produit.actions";
 
 // TODO : ces listes viendront de la base (tables famille, categorie, type_produit)
 const familles = ["Alimentation", "Maison"];
@@ -59,11 +61,27 @@ function Select({
 export default function ProduitForm({ produit }: { produit?: Produit }) {
   const router = useRouter();
   const modification = Boolean(produit);
+  const [erreur, setErreur] = useState<string | null>(null);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // TODO : appeler la Server Action (créer ou modifier le produit en base)
+    const formData = new FormData(e.currentTarget);
+
+    if (produit) {
+      formData.set("id", String(produit.id));
+    }
+
+    const resultat = produit
+      ? await modifierProduit(formData)
+      : await creerProduit(formData);
+
+    if (resultat?.error) {
+      setErreur(resultat.error);
+      return;
+    }
+
     router.push("/catalogue");
+    router.refresh();
   }
 
   return (
@@ -116,6 +134,8 @@ export default function ProduitForm({ produit }: { produit?: Produit }) {
         options={types}
         defaultValue={produit?.typeProduit}
       />
+
+      {erreur ? <p className="text-sm text-red-700">{erreur}</p> : null}
 
       <div className="flex items-center gap-3 pt-2">
         <button
