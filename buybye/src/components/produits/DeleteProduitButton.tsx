@@ -3,6 +3,7 @@
 import { useId, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
+import { supprimerProduit } from "@/actions/produit.actions";
 
 type Props = {
   produitId: number;
@@ -14,11 +15,10 @@ export default function DeleteProduitButton({ produitId, produitNom }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titreId = useId();
 
-  function confirmer() {
-    // TODO : appeler la Server Action supprimerProduit(produitId)
-    console.log("Suppression du produit", produitId);
-    dialogRef.current?.close();
-    router.refresh();
+  async function confirmer() {
+  await supprimerProduit(produitId);
+  dialogRef.current?.close();
+  router.refresh();
   }
 
   return (
