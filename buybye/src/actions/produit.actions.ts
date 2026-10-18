@@ -4,44 +4,59 @@ import { revalidatePath } from "next/cache";
 import { produits } from "@/lib/mocks";
 import { validerProduit } from "@/lib/validations";
 
+function revalider() {
+  revalidatePath("/catalogue");
+  revalidatePath("/produits");
+  revalidatePath("/accueil");
+  revalidatePath("/dashboard");
+}
+
 export async function creerProduit(formData: FormData) {
   const nom = String(formData.get("nom") ?? "").trim();
   const prixTexte = String(formData.get("prix") ?? "").trim();
-  const prix = Number(prixTexte);
-  const erreur = validerProduit(nom, prixTexte);
+  const famille = String(formData.get("famille") ?? "").trim();
+  const categorie = String(formData.get("categorie") ?? "").trim();
+  const typeProduit = String(formData.get("typeProduit") ?? "").trim();
+  const erreur = validerProduit(nom, prixTexte, famille, categorie, typeProduit);
 
   if (erreur) {
     return { error: erreur };
   }
 
   produits.push({
-    id: String(Date.now()),
+    id: produits.reduce((max, p) => Math.max(max, p.id), 0) + 1,
     nom,
-    prix,
+    prix: Number(prixTexte),
+    famille,
+    categorie,
+    typeProduit,
   });
-
-  revalidatePath("/");
+  revalider();
 }
 
 export async function modifierProduit(formData: FormData) {
-  const id = String(formData.get("id") ?? "");
+  const id = Number(formData.get("id"));
   const nom = String(formData.get("nom") ?? "").trim();
   const prixTexte = String(formData.get("prix") ?? "").trim();
-  const prix = Number(prixTexte);
+  const famille = String(formData.get("famille") ?? "").trim();
+  const categorie = String(formData.get("categorie") ?? "").trim();
+  const typeProduit = String(formData.get("typeProduit") ?? "").trim();
   const produit = produits.find((item) => item.id === id);
-  const erreur = validerProduit(nom, prixTexte);
+  const erreur = validerProduit(nom, prixTexte, famille, categorie, typeProduit);
 
   if (!produit || erreur) {
-    return;
+    return { error: erreur ?? "Produit introuvable" };
   }
 
   produit.nom = nom;
-  produit.prix = prix;
-  revalidatePath("/");
+  produit.prix = Number(prixTexte);
+  produit.famille = famille;
+  produit.categorie = categorie;
+  produit.typeProduit = typeProduit;
+  revalider();
 }
 
-export async function supprimerProduit(formData: FormData) {
-  const id = String(formData.get("id") ?? "");
+export async function supprimerProduit(id: number) {
   const index = produits.findIndex((item) => item.id === id);
 
   if (index === -1) {
@@ -49,5 +64,5 @@ export async function supprimerProduit(formData: FormData) {
   }
 
   produits.splice(index, 1);
-  revalidatePath("/");
+  revalider();
 }
