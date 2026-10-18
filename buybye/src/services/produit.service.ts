@@ -1,4 +1,4 @@
-import type { Produit } from "@/types";
+import type { Achat, Envie, Produit } from "@/types";
 import { achats, envies, produits } from "@/lib/mocks";
 
 export async function getProduits(): Promise<Produit[]> {
@@ -6,24 +6,23 @@ export async function getProduits(): Promise<Produit[]> {
 }
 
 export async function getProduitById(id: number): Promise<Produit | null> {
-  return produits.find((produit) => produit.id === id) ?? null;
+  return produits.find((p) => p.id === id) ?? null;
 }
 
-export async function getAchats() {
+export async function getAchats(): Promise<Achat[]> {
   return [...achats].sort((a, b) => b.date.localeCompare(a.date));
 }
 
-export async function getEnvies() {
+export async function getEnvies(): Promise<Envie[]> {
   return envies;
 }
 
 export async function getResumeAchats() {
   const liste = await getAchats();
   const totalDepense = liste.reduce(
-    (somme, achat) => somme + achat.produit.prix * achat.quantite,
+    (somme, a) => somme + a.produit.prix * a.quantite,
     0
   );
-
   return {
     totalDepense,
     nombreAchats: liste.length,
@@ -39,8 +38,10 @@ export async function getStats() {
   for (const achat of liste) {
     const montant = achat.produit.prix * achat.quantite;
     total += montant;
-    const categorie = achat.produit.categorie;
-    parCategorieMap.set(categorie, (parCategorieMap.get(categorie) ?? 0) + montant);
+    parCategorieMap.set(
+      achat.produit.categorie,
+      (parCategorieMap.get(achat.produit.categorie) ?? 0) + montant
+    );
   }
 
   const parCategorie = Array.from(parCategorieMap.entries())
