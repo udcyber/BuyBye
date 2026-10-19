@@ -6,18 +6,6 @@ import { useRouter } from "next/navigation";
 import type { Produit } from "@/types";
 import { creerProduit, modifierProduit } from "@/actions/produit.actions";
 
-// TODO : ces listes viendront de la base (tables famille, categorie, type_produit)
-const familles = ["Alimentation", "Maison"];
-const categories = [
-  "Produits laitiers",
-  "Boulangerie",
-  "Épicerie",
-  "Hygiène",
-  "Entretien",
-  "Fruits et légumes",
-];
-const types = ["Boisson", "Aliment frais", "Aliment sec", "Soin", "Ménage"];
-
 const champ =
   "mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus-visible:outline-2 focus-visible:outline-emerald-600";
 const etiquette = "text-sm font-medium text-slate-700";
@@ -58,7 +46,17 @@ function Select({
   );
 }
 
-export default function ProduitForm({ produit }: { produit?: Produit }) {
+export default function ProduitForm({
+  produit,
+  familles,
+  categories,
+  types,
+}: {
+  produit?: Produit;
+  familles: string[];
+  categories: string[];
+  types: string[];
+}) {
   const router = useRouter();
   const modification = Boolean(produit);
   const [erreur, setErreur] = useState<string | null>(null);

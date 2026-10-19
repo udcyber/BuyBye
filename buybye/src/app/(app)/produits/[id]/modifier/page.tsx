@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getProduitById } from "@/services/produit.service";
 import ProduitForm from "@/components/produits/ProduitForm";
+import { lireReferences } from "@/services/reference.service";
 
 export default async function ModifierProduitPage({
   params,
@@ -12,6 +13,8 @@ export default async function ModifierProduitPage({
 
   if (!produit) notFound();
 
+  const { familles, categories, types } = lireReferences();
+
   return (
     <div className="mx-auto max-w-lg space-y-6">
       <header>
@@ -20,7 +23,12 @@ export default async function ModifierProduitPage({
       </header>
 
       <div className="rounded-lg border border-slate-200 bg-white p-6">
-        <ProduitForm produit={produit} />
+        <ProduitForm
+          produit={produit}
+          familles={familles}
+          categories={categories}
+          types={types}
+        />
       </div>
     </div>
   );
