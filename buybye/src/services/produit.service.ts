@@ -1,5 +1,4 @@
 import type { Achat, Envie, Produit } from "@/types";
-import { produits } from "@/lib/mocks";
 import { prisma } from "@/lib/prisma";
 
 export async function getProduits(): Promise<Produit[]> {
@@ -7,7 +6,7 @@ export async function getProduits(): Promise<Produit[]> {
 }
 
 export async function getProduitById(id: number): Promise<Produit | null> {
-  return produits.find((p) => p.id === id) ?? null;
+  return prisma.produit.findUnique({ where: { id } });
 }
 
 export async function getAchats(): Promise<Achat[]> {
