@@ -24,13 +24,14 @@ export async function creerProduit(formData: FormData) {
     return { error: erreur };
   }
 
-  produits.push({
-    id: produits.reduce((max, p) => Math.max(max, p.id), 0) + 1,
-    nom,
-    prix: Number(prixTexte),
-    famille,
-    categorie,
-    typeProduit,
+  await prisma.produit.create({
+    data: {
+      nom: nom,
+      prix: Number(prixTexte),
+      famille: famille,
+      categorie: categorie,
+      typeProduit: typeProduit,
+    },
   });
   revalider();
 }
