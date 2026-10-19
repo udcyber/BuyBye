@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { produits } from "@/lib/mocks";
 import { validerProduit } from "@/lib/validations";
 import { prisma } from "@/lib/prisma";
 
@@ -63,12 +62,9 @@ export async function modifierProduit(formData: FormData) {
 }
 
 export async function supprimerProduit(id: number) {
-  const index = produits.findIndex((item) => item.id === id);
-
-  if (index === -1) {
-    return;
-  }
-
-  produits.splice(index, 1);
+  await prisma.produit.delete({
+    where: { id: id },
+  });
   revalider();
 }
+
