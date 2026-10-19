@@ -7,3 +7,10 @@ INSERT INTO "Produit" (nom, prix, categorie, famille, "typeProduit") VALUES
 ('Café moulu 250 g', 4.9, 'Épicerie', 'Alimentation', 'Boisson'),
 ('Pommes bio 1 kg', 3.2, 'Fruits et légumes', 'Alimentation', 'Aliment frais'),
 ('Dentifrice', 2.8, 'Hygiène', 'Maison', 'Soin');
+
+INSERT INTO "Envie" ("dateAjout", "produitId")
+SELECT '2026-10-01', id FROM "Produit" WHERE nom = 'Liquide vaisselle'
+UNION ALL
+SELECT '2026-09-25', id FROM "Produit" WHERE nom = 'Dentifrice'
+UNION ALL
+SELECT '2026-09-18', id FROM "Produit" WHERE nom = 'Café moulu 250 g';

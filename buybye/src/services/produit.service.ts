@@ -1,5 +1,5 @@
 import type { Achat, Envie, Produit } from "@/types";
-import { achats, envies, produits } from "@/lib/mocks";
+import { achats, produits } from "@/lib/mocks";
 import { prisma } from "@/lib/prisma";
 
 export async function getProduits(): Promise<Produit[]> {
@@ -15,7 +15,16 @@ export async function getAchats(): Promise<Achat[]> {
 }
 
 export async function getEnvies(): Promise<Envie[]> {
-  return envies;
+  const lignes = await prisma.envie.findMany({
+    include: { produit: true },
+    orderBy: { dateAjout: "desc" },
+  });
+
+  return lignes.map((ligne) => ({
+    id: ligne.id,
+    dateAjout: ligne.dateAjout.toISOString().slice(0, 10),
+    produit: ligne.produit,
+  }));
 }
 
 export async function getResumeAchats() {
