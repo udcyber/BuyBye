@@ -19,13 +19,15 @@ export async function ajouterEnvie(formData: FormData) {
   revalidatePath("/envie");
 }
 
-export async function retirerEnvie(id: number) {
-  const index = envies.findIndex((item) => item.id === id);
+export async function retirerEnvie(formData: FormData) {
+  const id = Number(formData.get("id"));
 
-  if (index === -1) {
+  if (!id) {
     return;
   }
 
-  envies.splice(index, 1);
+  await prisma.envie.delete({
+    where: { id: id },
+  });
   revalidatePath("/envie");
 }

@@ -1,6 +1,7 @@
 import { Heart } from "lucide-react";
 import type { Envie } from "@/types";
 import { formatDate, formatPrix } from "@/lib/utils";
+import { retirerEnvie } from "@/actions/envie.actions";
 
 export default function EnvieList({ envies }: { envies: Envie[] }) {
   if (envies.length === 0) {
@@ -27,6 +28,15 @@ export default function EnvieList({ envies }: { envies: Envie[] }) {
             </p>
           </div>
           <p className="font-semibold">{formatPrix(envie.produit.prix)}</p>
+          <form action={retirerEnvie}>
+            <input type="hidden" name="id" value={envie.id} />
+            <button
+              type="submit"
+              className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700"
+            >
+              Retirer
+            </button>
+          </form>
         </li>
       ))}
     </ul>
