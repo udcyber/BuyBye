@@ -1,5 +1,6 @@
-import { produits } from "@/lib/mocks";
+import type { Produit } from "@/types";
+import { prisma } from "@/lib/prisma";
 
-export function lireCatalogue() {
-  return produits;
+export async function lireCatalogue(): Promise<Produit[]> {
+  return prisma.produit.findMany({ orderBy: { id: "asc" } });
 }
