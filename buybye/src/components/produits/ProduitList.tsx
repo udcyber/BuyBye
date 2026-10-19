@@ -3,6 +3,7 @@ import { Pencil } from "lucide-react";
 import type { Produit } from "@/types";
 import ProduitCard from "@/components/produits/ProduitCard";
 import DeleteProduitButton from "@/components/produits/DeleteProduitButton";
+import { ajouterAchat } from "@/actions/achat.actions";
 
 type Props = {
   produits: Produit[];
@@ -35,6 +36,16 @@ export default function ProduitList({ produits, avecActions = false }: Props) {
                 <Pencil size={16} aria-hidden="true" />
                 Modifier
               </Link>
+              <form action={ajouterAchat}>
+                <input type="hidden" name="produitId" value={produit.id} />
+                <input type="hidden" name="quantite" value="1" />
+                <button
+                  type="submit"
+                  className="rounded-md border border-emerald-700 px-3 py-2 text-sm font-medium text-emerald-700"
+                >
+                  Acheté
+                </button>
+              </form>
               <DeleteProduitButton
                 produitId={produit.id}
                 produitNom={produit.nom}

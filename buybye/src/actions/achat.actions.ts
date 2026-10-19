@@ -1,25 +1,27 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { achats, produits } from "@/lib/mocks";
+import { achats } from "@/lib/mocks";
+import { prisma } from "@/lib/prisma";
 
 export async function ajouterAchat(formData: FormData) {
   const produitId = Number(formData.get("produitId"));
   const quantite = Number(formData.get("quantite") ?? 1);
-  const produit = produits.find((item) => item.id === produitId);
 
-  if (!produit || quantite <= 0) {
+  if (!produitId || quantite <= 0) {
     return;
   }
 
-  achats.push({
-    id: Date.now(),
-    produit,
-    quantite,
-    date: new Date().toISOString().slice(0, 10),
+  await prisma.achat.create({
+    data: {
+      produitId: produitId,
+      quantite: quantite,
+      date: new Date(),
+    },
   });
   revalidatePath("/accueil");
   revalidatePath("/dashboard");
+  revalidatePath("/produits");
 }
 
 export async function retirerAchat(id: number) {
