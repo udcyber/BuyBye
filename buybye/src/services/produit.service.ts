@@ -48,29 +48,3 @@ export async function getResumeAchats() {
     derniersAchats: liste.slice(0, 3),
   };
 }
-
-export async function getStats() {
-  const liste = await getAchats();
-  const parCategorieMap = new Map<string, number>();
-  let total = 0;
-
-  for (const achat of liste) {
-    const montant = achat.produit.prix * achat.quantite;
-    total += montant;
-    parCategorieMap.set(
-      achat.produit.categorie,
-      (parCategorieMap.get(achat.produit.categorie) ?? 0) + montant
-    );
-  }
-
-  const parCategorie = Array.from(parCategorieMap.entries())
-    .map(([categorie, montant]) => ({ categorie, montant }))
-    .sort((a, b) => b.montant - a.montant);
-
-  return {
-    total,
-    nombreAchats: liste.length,
-    montantMoyen: liste.length > 0 ? total / liste.length : 0,
-    parCategorie,
-  };
-}
