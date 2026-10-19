@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { produits } from "@/lib/mocks";
 import { validerProduit } from "@/lib/validations";
+import { prisma } from "@/lib/prisma";
 
 function revalider() {
   revalidatePath("/catalogue");
@@ -41,18 +42,22 @@ export async function modifierProduit(formData: FormData) {
   const famille = String(formData.get("famille") ?? "").trim();
   const categorie = String(formData.get("categorie") ?? "").trim();
   const typeProduit = String(formData.get("typeProduit") ?? "").trim();
-  const produit = produits.find((item) => item.id === id);
   const erreur = validerProduit(nom, prixTexte, famille, categorie, typeProduit);
 
-  if (!produit || erreur) {
-    return { error: erreur ?? "Produit introuvable" };
+  if (erreur) {
+    return { error: erreur };
   }
 
-  produit.nom = nom;
-  produit.prix = Number(prixTexte);
-  produit.famille = famille;
-  produit.categorie = categorie;
-  produit.typeProduit = typeProduit;
+  await prisma.produit.update({
+    where: { id: id },
+    data: {
+      nom: nom,
+      prix: Number(prixTexte),
+      famille: famille,
+      categorie: categorie,
+      typeProduit: typeProduit,
+    },
+  });
   revalider();
 }
 
