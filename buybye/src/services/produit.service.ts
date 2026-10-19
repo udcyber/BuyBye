@@ -1,8 +1,9 @@
 import type { Achat, Envie, Produit } from "@/types";
 import { achats, envies, produits } from "@/lib/mocks";
+import { prisma } from "@/lib/prisma";
 
 export async function getProduits(): Promise<Produit[]> {
-  return produits;
+  return prisma.produit.findMany({ orderBy: { id: "asc" } });
 }
 
 export async function getProduitById(id: number): Promise<Produit | null> {
