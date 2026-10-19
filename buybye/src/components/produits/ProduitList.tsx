@@ -4,6 +4,7 @@ import type { Produit } from "@/types";
 import ProduitCard from "@/components/produits/ProduitCard";
 import DeleteProduitButton from "@/components/produits/DeleteProduitButton";
 import { ajouterAchat } from "@/actions/achat.actions";
+import { ajouterEnvie } from "@/actions/envie.actions";
 
 type Props = {
   produits: Produit[];
@@ -43,7 +44,16 @@ export default function ProduitList({ produits, avecActions = false }: Props) {
                   type="submit"
                   className="rounded-md border border-emerald-700 px-3 py-2 text-sm font-medium text-emerald-700"
                 >
-                  Acheté
+                  🛒
+                </button>
+              </form>
+              <form action={ajouterEnvie}>
+                <input type="hidden" name="produitId" value={produit.id} />
+                <button
+                  type="submit"
+                  className="rounded-md border border-emerald-700 px-3 py-2 text-sm font-medium text-rose-600"
+                >
+                  💚
                 </button>
               </form>
               <DeleteProduitButton

@@ -1,20 +1,20 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { envies, produits } from "@/lib/mocks";
+import { prisma } from "@/lib/prisma";
 
 export async function ajouterEnvie(formData: FormData) {
   const produitId = Number(formData.get("produitId"));
-  const produit = produits.find((item) => item.id === produitId);
 
-  if (!produit) {
+  if (!produitId) {
     return;
   }
 
-  envies.push({
-    id: Date.now(),
-    produit,
-    dateAjout: new Date().toISOString().slice(0, 10),
+  await prisma.envie.create({
+    data: {
+      produitId: produitId,
+      dateAjout: new Date(),
+    },
   });
   revalidatePath("/envie");
 }
