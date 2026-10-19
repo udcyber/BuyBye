@@ -1,8 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { achats } from "@/lib/mocks";
 import { prisma } from "@/lib/prisma";
+
+function revaliderAchats() {
+  revalidatePath("/accueil");
+  revalidatePath("/dashboard");
+  revalidatePath("/produits");
+}
 
 export async function ajouterAchat(formData: FormData) {
   const produitId = Number(formData.get("produitId"));
@@ -19,19 +24,18 @@ export async function ajouterAchat(formData: FormData) {
       date: new Date(),
     },
   });
-  revalidatePath("/accueil");
-  revalidatePath("/dashboard");
-  revalidatePath("/produits");
+  revaliderAchats();
 }
 
-export async function retirerAchat(id: number) {
-  const index = achats.findIndex((item) => item.id === id);
+export async function retirerAchat(formData: FormData) {
+  const id = Number(formData.get("id"));
 
-  if (index === -1) {
+  if (!id) {
     return;
   }
 
-  achats.splice(index, 1);
-  revalidatePath("/accueil");
-  revalidatePath("/dashboard");
+  await prisma.achat.delete({
+    where: { id: id },
+  });
+  revaliderAchats();
 }

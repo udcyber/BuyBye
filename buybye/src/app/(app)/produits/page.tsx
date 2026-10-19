@@ -1,4 +1,5 @@
 import { getAchats } from "@/services/produit.service";
+import { retirerAchat } from "@/actions/achat.actions";
 import { formatDate, formatPrix } from "@/lib/utils";
 
 export default async function HistoriqueAchatPage() {
@@ -26,6 +27,7 @@ export default async function HistoriqueAchatPage() {
               <th className="px-4 py-3 text-right font-medium">Quantité</th>
               <th className="px-4 py-3 text-right font-medium">Prix unitaire</th>
               <th className="px-4 py-3 text-right font-medium">Total</th>
+              <th className="px-4 py-3 font-medium"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200">
@@ -42,6 +44,17 @@ export default async function HistoriqueAchatPage() {
                 <td className="px-4 py-3 text-right font-medium">
                   {formatPrix(achat.produit.prix * achat.quantite)}
                 </td>
+                <td className="px-4 py-3 text-right">
+                  <form action={retirerAchat}>
+                    <input type="hidden" name="id" value={achat.id} />
+                    <button
+                      type="submit"
+                      className="rounded-md border border-red-600 px-3 py-2 text-sm font-medium text-red-600"
+                    >
+                      Retirer
+                    </button>
+                  </form>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -53,6 +66,7 @@ export default async function HistoriqueAchatPage() {
               <td className="px-4 py-3 text-right font-bold text-emerald-700">
                 {formatPrix(total)}
               </td>
+              <td></td>
             </tr>
           </tfoot>
         </table>
