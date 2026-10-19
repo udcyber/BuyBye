@@ -1,10 +1,6 @@
 import type { Achat, Envie, Produit } from "@/types";
 import { prisma } from "@/lib/prisma";
 
-export async function getProduits(): Promise<Produit[]> {
-  return prisma.produit.findMany({ orderBy: { id: "asc" } });
-}
-
 export async function getProduitById(id: number): Promise<Produit | null> {
   return prisma.produit.findUnique({ where: { id } });
 }
