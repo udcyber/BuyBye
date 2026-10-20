@@ -114,7 +114,7 @@ export default function ProduitForm({ produit }: { produit?: Produit }) {
         id="typeProduit"
         label="Type de produit"
         options={types}
-        defaultValue={produit?.typeProduit}
+        defaultValue={produit?.typeProduit?? undefined}
       />
 
       <div className="flex items-center gap-3 pt-2">
