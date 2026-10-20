@@ -1,8 +1,8 @@
 "use client";
 
-import { useId, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useId, useRef, useState, useTransition } from "react";
 import { Trash2 } from "lucide-react";
+import { supprimerProduit } from "@/actions/produit.actions";
 
 type Props = {
   produitId: number;
@@ -10,22 +10,30 @@ type Props = {
 };
 
 export default function DeleteProduitButton({ produitId, produitNom }: Props) {
-  const router = useRouter();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titreId = useId();
+  const [enAttente, startTransition] = useTransition();
+  const [erreur, setErreur] = useState<string | null>(null);
 
   function confirmer() {
-    // TODO : appeler la Server Action supprimerProduit(produitId)
-    console.log("Suppression du produit", produitId);
-    dialogRef.current?.close();
-    router.refresh();
+    startTransition(async () => {
+      const resultat = await supprimerProduit(produitId);
+      if (resultat.ok) {
+        dialogRef.current?.close();
+      } else {
+        setErreur(resultat.message ?? "La suppression a échoué.");
+      }
+    });
   }
 
   return (
     <>
       <button
         type="button"
-        onClick={() => dialogRef.current?.showModal()}
+        onClick={() => {
+          setErreur(null);
+          dialogRef.current?.showModal();
+        }}
         className="flex items-center gap-2 rounded-md border border-red-200 bg-white px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-2 focus-visible:outline-red-600"
       >
         <Trash2 size={16} aria-hidden="true" />
@@ -41,9 +49,14 @@ export default function DeleteProduitButton({ produitId, produitNom }: Props) {
           Supprimer ce produit ?
         </h2>
         <p className="mt-2 text-sm text-slate-600">
-          « {produitNom} » sera définitivement supprimé. Cette action est
-          irréversible.
+          « {produitNom} » disparaîtra du catalogue, mais restera visible dans
+          votre historique d'achat et votre liste d'envies.
         </p>
+        {erreur && (
+          <p role="alert" className="mt-2 text-sm font-medium text-red-700">
+            {erreur}
+          </p>
+        )}
         <div className="mt-6 flex justify-end gap-2">
           <button
             type="button"
@@ -55,9 +68,10 @@ export default function DeleteProduitButton({ produitId, produitNom }: Props) {
           <button
             type="button"
             onClick={confirmer}
-            className="rounded-md bg-red-700 px-4 py-2 text-sm font-medium text-white hover:bg-red-800"
+            disabled={enAttente}
+            className="rounded-md bg-red-700 px-4 py-2 text-sm font-medium text-white hover:bg-red-800 disabled:opacity-60"
           >
-            Supprimer
+            {enAttente ? "Suppression…" : "Supprimer"}
           </button>
         </div>
       </dialog>

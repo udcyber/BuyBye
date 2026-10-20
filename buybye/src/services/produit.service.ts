@@ -18,7 +18,9 @@ function toProduit(p: ProduitDb): Produit {
     prix: p.prix.toNumber(),
     categorie: p.famille.categorie.nom,
     famille: p.famille.nom,
+    familleId: p.familleId,
     typeProduit: p.typeProduit?.nom ?? null,
+    typeProduitId: p.typeProduitId,
   };
 }
 
