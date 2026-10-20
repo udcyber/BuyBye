@@ -4,7 +4,7 @@ import { formatDate, formatPrix } from "@/lib/utils";
 export default async function HistoriqueAchatPage() {
   const achats = await getAchats();
   const total = achats.reduce(
-    (somme, a) => somme + a.produit.prix * a.quantite,
+    (somme, a) => somme + a.prixUnitaire * a.quantite,
     0
   );
 
@@ -37,10 +37,10 @@ export default async function HistoriqueAchatPage() {
                 <td className="px-4 py-3">{achat.produit.nom}</td>
                 <td className="px-4 py-3 text-right">{achat.quantite}</td>
                 <td className="px-4 py-3 text-right">
-                  {formatPrix(achat.produit.prix)}
+                  {formatPrix(achat.prixUnitaire)}
                 </td>
                 <td className="px-4 py-3 text-right font-medium">
-                  {formatPrix(achat.produit.prix * achat.quantite)}
+                  {formatPrix(achat.prixUnitaire * achat.quantite)}
                 </td>
               </tr>
             ))}
