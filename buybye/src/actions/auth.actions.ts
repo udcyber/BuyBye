@@ -4,6 +4,13 @@ import argon2 from "argon2";
 import { prisma } from "@/lib/prisma";
 
 export async function inscrire(nom: string, email: string, motDePasse: string) {
+  const emailPropre = email.trim();
+  const emailValide = /^.+@.+\..+$/.test(emailPropre);
+  
+  if (emailValide === false) {
+    return { ok: false };
+  }
+
   if (motDePasse.length < 17 || motDePasse.length > 72) {
     return { ok: false };
   }
@@ -25,7 +32,9 @@ export async function inscrire(nom: string, email: string, motDePasse: string) {
     parallelism: 1,
   });
 
-  const emailDejaPris = await prisma.utilisateur.findUnique({ where: { email } });
+  const emailDejaPris = await prisma.utilisateur.findUnique({
+    where: { email: emailPropre },
+  });
   if (emailDejaPris) {
     return { ok: false };
   }
@@ -33,7 +42,7 @@ export async function inscrire(nom: string, email: string, motDePasse: string) {
   await prisma.utilisateur.create({
     data: {
       nom,
-      email,
+      email: emailPropre,
       motDePasse: motDePasseHashe,
     },
   });
