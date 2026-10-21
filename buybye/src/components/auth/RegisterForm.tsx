@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { inscrire } from "@/actions/auth.actions";
 
 const champ =
   "mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus-visible:outline-2 focus-visible:outline-emerald-600";
@@ -10,17 +11,29 @@ export default function RegisterForm() {
   const router = useRouter();
   const [erreur, setErreur] = useState<string | null>(null);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const donnees = new FormData(e.currentTarget);
+    const motDePasse = String(donnees.get("motDePasse") ?? "");
 
-    if (donnees.get("motDePasse") !== donnees.get("confirmation")) {
+    if (motDePasse !== String(donnees.get("confirmation") ?? "")) {
       setErreur("Les mots de passe ne correspondent pas.");
       return;
     }
 
-    setErreur(null);
-    // TODO : enregistrer l’utilisateur en base (Server Action + Prisma)
+    const resultat = await inscrire(
+      String(donnees.get("nom") ?? ""),
+      String(donnees.get("email") ?? ""),
+      motDePasse
+    );
+
+    if (!resultat.ok) {
+      setErreur(
+        "Inscription refusée. Mot de passe de 17 caractères minimum, sans espace, ou e-mail déjà utilisé."
+      );
+      return;
+    }
+
     router.push("/accueil");
   }
 
@@ -59,14 +72,14 @@ export default function RegisterForm() {
           htmlFor="motDePasse"
           className="text-sm font-medium text-slate-700"
         >
-          Mot de passe (8 caractères minimum)
+          Mot de passe (17 caractères minimum)
         </label>
         <input
           id="motDePasse"
           name="motDePasse"
           type="password"
           required
-          minLength={8}
+          minLength={17}
           autoComplete="new-password"
           className={champ}
         />
