@@ -3,35 +3,12 @@
 import argon2 from "argon2";
 import { prisma } from "@/lib/prisma";
 
-const motsInterdits = [
-  "12345678",
-  "123456789",
-  "1234567890",
-  "12345678910",
-  "password",
-  "password1",
-  "pass@123",
-  "p@ssw0rd",
-  "admin123",
-  "admin@123",
-  "aa123456",
-  "aa@123456",
-  "qwerty123",
-  "qwertyuiop",
-  "iloveyou",
-  "11111111",
-];
-
 export async function inscrire(nom: string, email: string, motDePasse: string) {
   if (motDePasse.length < 17 || motDePasse.length > 72) {
     return { ok: false };
   }
 
   if (motDePasse.includes(" ")) {
-    return { ok: false };
-  }
-
-  if (motsInterdits.includes(motDePasse.toLowerCase())) {
     return { ok: false };
   }
 
@@ -65,7 +42,17 @@ export async function inscrire(nom: string, email: string, motDePasse: string) {
 }
 
 export async function connecter(email: string, motDePasse: string) {
-  const user = await prisma.utilisateur.findUnique({ where: { email } });
+  const emailPropre = email.trim();
+  // Removes spaces and tabs around the email.
+  const emailValide = /^.+@.+\..+$/.test(emailPropre);
+
+  if (emailValide === false) {
+    return { ok: false };
+  }
+
+  const user = await prisma.utilisateur.findUnique({
+    where: { email: emailPropre },
+  });
   if (!user) {
     return { ok: false };
   }
