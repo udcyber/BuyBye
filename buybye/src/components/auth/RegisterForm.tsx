@@ -29,9 +29,13 @@ export default function RegisterForm() {
     );
 
     if (!resultat.ok) {
-      setErreur(
-        "Inscription refusée. Mot de passe de 17 caractères minimum, sans espace, ou e-mail déjà utilisé."
-      );
+      const messages: { [clef: string]: string } = {
+        email: "Adresse e-mail invalide.",
+        longueur: "Le mot de passe doit contenir entre 6 et 32 caractères.",
+        caracteres:
+          "Lettres, chiffres, et ces signes seulement : ! @ # $ % ^ & * _ + = ? . -",
+      };
+      setErreur(messages[resultat.code] ?? "Inscription refusée.");
       return;
     }
 
@@ -73,14 +77,15 @@ export default function RegisterForm() {
           htmlFor="motDePasse"
           className="text-sm font-medium text-slate-700"
         >
-          Mot de passe (17 caractères minimum)
+          Mot de passe (6 à 72 caractères)
         </label>
         <input
           id="motDePasse"
           name="motDePasse"
           type="password"
           required
-          minLength={17}
+          minLength={6}
+          maxLength={72}
           autoComplete="new-password"
           className={champ}
         />
@@ -98,6 +103,8 @@ export default function RegisterForm() {
           name="confirmation"
           type="password"
           required
+          minLength={6}
+          maxLength={72}
           autoComplete="new-password"
           className={champ}
         />

@@ -4,14 +4,19 @@ import argon2 from "argon2";
 import { prisma } from "@/lib/prisma";
 
 export async function inscrire(nom: string, email: string, motDePasse: string) {
-  const emailPropre = email.trim();
-  const emailValide = /^.+@.+\..+$/.test(emailPropre);
+  const emailPropre = email.trim().toLowerCase();
+  const emailValide = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(emailPropre);
   
   if (emailValide === false) {
     return { ok: false };
   }
 
-  if (motDePasse.length < 17 || motDePasse.length > 72) {
+  if (motDePasse.length < 6 || motDePasse.length > 72) {
+    return { ok: false };
+  }
+
+  const caracteresOk = /^[a-zA-Z0-9!@#$%^&*_+=?.-]+$/;
+  if (caracteresOk.test(motDePasse) === false) {
     return { ok: false };
   }
 
@@ -51,9 +56,9 @@ export async function inscrire(nom: string, email: string, motDePasse: string) {
 }
 
 export async function connecter(email: string, motDePasse: string) {
-  const emailPropre = email.trim();
+  const emailPropre = email.trim().toLowerCase();
   // Removes spaces and tabs around the email.
-  const emailValide = /^.+@.+\..+$/.test(emailPropre);
+  const emailValide = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(emailPropre);
 
   if (emailValide === false) {
     return { ok: false };
