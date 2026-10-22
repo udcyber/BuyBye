@@ -32,3 +32,10 @@ model Envie {
   produit   Produit  @relation(fields: [produitId], references: [id])
   produitId Int
 }
+
+model Utilisateur {
+  id          Int    @id @default(autoincrement())
+  nom         String
+  email       String @unique
+  motDePasse  String
+}
