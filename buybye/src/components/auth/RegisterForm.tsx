@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { inscrire } from "@/actions/auth.actions";
-import { connecter } from "@/actions/auth.actions";
 
 const champ =
   "mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus-visible:outline-2 focus-visible:outline-emerald-600";
@@ -31,9 +30,10 @@ export default function RegisterForm() {
     if (!resultat.ok) {
       const messages: { [clef: string]: string } = {
         email: "Adresse e-mail invalide.",
-        longueur: "Le mot de passe doit contenir entre 6 et 32 caractères.",
+        longueur: "Le mot de passe doit contenir entre 6 et 72 caractères.",
         caracteres:
-          "Lettres, chiffres, et ces signes seulement : ! @ # $ % ^ & * _ + = ? . -",
+          "Une minuscule, une majuscule, un chiffre et un caractère spécial (!@#$%^&*_+=?.-).",
+        pris: "Cette adresse e-mail est déjà utilisée.",
       };
       setErreur(messages[resultat.code] ?? "Inscription refusée.");
       return;
