@@ -4,30 +4,33 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 // Catégories = les 13 divisions de la COICOP 2018 (INSEE)
-// ⚠️ Intitulés 01 à 12 à vérifier sur insee.fr
+// ✔ = intitulé vérifié sur insee.fr (ECOICOP v2) ; ⚠ = à vérifier
 const categories = [
-  { code: "01", nom: "Produits alimentaires et boissons non alcoolisées" },
-  { code: "02", nom: "Boissons alcoolisées, tabac et stupéfiants" },
-  { code: "03", nom: "Vêtements et chaussures" },
-  { code: "04", nom: "Logement, eau, gaz, électricité et autres combustibles" },
-  { code: "05", nom: "Ameublement, équipement du foyer et entretien courant de la maison" },
-  { code: "06", nom: "Santé" },
-  { code: "07", nom: "Transports" },
-  { code: "08", nom: "Information et communication" },
-  { code: "09", nom: "Loisirs, sports et culture" },
-  { code: "10", nom: "Services d'enseignement" },
-  { code: "11", nom: "Restaurants et services d'hébergement" },
-  { code: "12", nom: "Services d'assurance et services financiers" },
-  { code: "13", nom: "Soins corporels, protection sociale et biens et services divers" },
+  { code: "01", nom: "Produits alimentaires et boissons non alcoolisées" }, // ✔
+  { code: "02", nom: "Boissons alcoolisées, tabac et stupéfiants" }, // ⚠
+  { code: "03", nom: "Articles d’habillement et chaussures" }, // ✔
+  { code: "04", nom: "Logement, eau, gaz, électricité et autres combustibles" }, // ✔
+  { code: "05", nom: "Meubles, articles de ménage et entretien courant du foyer" }, // ✔
+  { code: "06", nom: "Santé" }, // ⚠
+  { code: "07", nom: "Transports" }, // ⚠
+  { code: "08", nom: "Information et communication" }, // ✔
+  { code: "09", nom: "Loisirs, sport et culture" }, // ✔
+  { code: "10", nom: "Services d'enseignement" }, // ⚠
+  { code: "11", nom: "Services de restauration et d'hébergement" }, // ✔
+  { code: "12", nom: "Assurance et services financiers" }, // ✔
+  { code: "13", nom: "Soins corporels, protection sociale et biens et services divers" }, // ✔
 ];
 
-// Familles : sous-ensemble pour le MVP, à compléter plus tard
+// Familles : sous-ensemble pour le MVP (groupes INSEE), à compléter
 const familles = [
-  { categorieCode: "01", nom: "Produits alimentaires" },
-  { categorieCode: "01", nom: "Boissons non alcoolisées" },
-  { categorieCode: "05", nom: "Entretien courant de la maison" },
-  { categorieCode: "13", nom: "Soins personnels" },
+  { categorieCode: "01", nom: "Produits alimentaires" }, // 01.1 ✔
+  { categorieCode: "01", nom: "Boissons non alcoolisées" }, // 01.2 ✔
+  { categorieCode: "02", nom: "Boissons alcoolisées" }, // 02.1 ⚠
+  { categorieCode: "05", nom: "Entretien courant de la maison" }, // ⚠
+  { categorieCode: "11", nom: "Services de restauration et de débits de boissons" }, // 11.1 ✔
+  { categorieCode: "13", nom: "Soins personnels" }, // 13.1 ⚠
 ];
+
 
 async function seedReference() {
   for (const { code, nom } of categories) {
