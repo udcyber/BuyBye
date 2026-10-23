@@ -6,7 +6,7 @@ export async function lireStats() {
   let total = 0;
 
   for (const achat of liste) {
-    const montant = achat.produit.prix * achat.quantite;
+    const montant = achat.prixUnitaire * achat.quantite;
     total += montant;
     montantsParCategorie.set(
       achat.produit.categorie,
