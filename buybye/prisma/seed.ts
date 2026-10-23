@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
+import argon2 from "argon2";
 
 const prisma = new PrismaClient();
 
@@ -67,7 +67,7 @@ async function seedDemo() {
     data: {
       nom: "Demo",
       email: EMAIL_DEMO,
-      motDePasseHash: await bcrypt.hash("demo1234", 10),
+      motDePasseHash: await argon2.hash("demo1234", { type: argon2.argon2id }),
     },
   });
 

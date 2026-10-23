@@ -1,16 +1,41 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { connecter } from "@/actions/auth.actions";
 
 const champ =
   "mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus-visible:outline-2 focus-visible:outline-emerald-600";
 
 export default function LoginForm() {
   const router = useRouter();
+  const [erreur, setErreur] = useState<string | null>(null);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // TODO : remplacer par la vraie authentification (Auth.js)
+    const donnees = new FormData(e.currentTarget);
+    const email = String(donnees.get("email") ?? "").trim();
+    const motDePasse = String(donnees.get("motDePasse") ?? "");
+    const emailValide = /^.+@.+\..+$/.test(email);
+    // Regex Syntax:
+        // ^   = start of the text
+        // .+  = at least 1 character
+        // @   = the required @
+        // \.  = the required dot (.)
+        // $   = end of the text
+        // for instance: text@text.text
+
+    if (emailValide === false) {
+      setErreur("Adresse e-mail invalide.");
+      return;
+    }
+
+    const resultat = await connecter(email, motDePasse);
+    if (!resultat.ok) {
+      setErreur("E-mail ou mot de passe incorrect.");
+      return;
+    }
+
     router.push("/accueil");
   }
 
@@ -46,7 +71,11 @@ export default function LoginForm() {
           className={champ}
         />
       </div>
-
+      {erreur && (
+        <p role="alert" className="text-sm font-medium text-red-700">
+          {erreur}
+        </p>
+      )}
       <button
         type="submit"
         className="w-full rounded-md bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"

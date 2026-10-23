@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { getProduits } from "@/services/produit.service";
+import { lireCatalogue } from "@/services/catalogue.service";
 import ProduitList from "@/components/produits/ProduitList";
 
 export default async function CataloguePage() {
-  const produits = await getProduits();
+  const produits = await lireCatalogue();
 
   return (
     <div className="space-y-6">

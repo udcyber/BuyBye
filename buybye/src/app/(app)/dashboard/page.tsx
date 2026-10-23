@@ -1,9 +1,9 @@
-import { getStats } from "@/services/produit.service";
+import { lireStats } from "@/services/stats.service";
 import { formatPrix } from "@/lib/utils";
 import StatsCards from "@/components/dashboard/StatsCards";
 
 export default async function DashboardPage() {
-  const stats = await getStats();
+  const stats = await lireStats();
   const maxCategorie = stats.parCategorie[0]?.montant ?? 0;
 
   return (

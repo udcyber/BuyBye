@@ -87,6 +87,7 @@ model Achat {
 
 model Envie {
   id        Int      @id @default(autoincrement())
+
   dateAjout DateTime @default(now())
   userId    Int
   produitId Int
