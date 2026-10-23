@@ -54,18 +54,18 @@ export async function inscrire(nom: string, email: string, motDePasse: string) {
     parallelism: 1,
   });
 
-  const emailDejaPris = await prisma.utilisateur.findUnique({
+  const emailDejaPris = await prisma.user.findUnique({
     where: { email: emailPropre },
   });
   if (emailDejaPris) {
     return { ok: false, code: "pris" };
   }
 
-  const compte = await prisma.utilisateur.create({
+  const compte = await prisma.user.create({
     data: {
       nom,
       email: emailPropre,
-      motDePasse: motDePasseHashe,
+      motDePasseHash: motDePasseHashe,
     },
   });
 
@@ -82,14 +82,14 @@ export async function connecter(email: string, motDePasse: string) {
     return { ok: false };
   }
 
-  const user = await prisma.utilisateur.findUnique({
+  const user = await prisma.user.findUnique({
     where: { email: emailPropre },
   });
   if (!user) {
     return { ok: false };
   }
 
-  const bon = await argon2.verify(user.motDePasse, motDePasse);
+  const bon = await argon2.verify(user.motDePasseHash, motDePasse);
   if (!bon) {
     return { ok: false };
   }
@@ -115,7 +115,7 @@ export async function lireSession() {
     return null;
   }
 
-  const compte = await prisma.utilisateur.findUnique({
+  const compte = await prisma.user.findUnique({
     where: { id },
   });
 
