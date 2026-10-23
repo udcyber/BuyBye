@@ -1,8 +1,14 @@
 import ProduitForm from "@/components/produits/ProduitForm";
-import { lireReferences } from "@/services/reference.service";
+import {
+  getCategoriesAvecFamilles,
+  getTypesProduit,
+} from "@/services/reference.service";
 
-export default function NouveauProduitPage() {
-  const { familles, categories, types } = lireReferences();
+export default async function NouveauProduitPage() {
+  const [categories, types] = await Promise.all([
+    getCategoriesAvecFamilles(),
+    getTypesProduit(),
+  ]);
 
   return (
     <div className="mx-auto max-w-lg space-y-6">
@@ -14,11 +20,7 @@ export default function NouveauProduitPage() {
       </header>
 
       <div className="rounded-lg border border-slate-200 bg-white p-6">
-        <ProduitForm
-          familles={familles}
-          categories={categories}
-          types={types}
-        />
+        <ProduitForm categories={categories} types={types} />
       </div>
     </div>
   );

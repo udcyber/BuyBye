@@ -1,7 +1,10 @@
 import { notFound } from "next/navigation";
 import { getProduitById } from "@/services/produit.service";
+import {
+  getCategoriesAvecFamilles,
+  getTypesProduit,
+} from "@/services/reference.service";
 import ProduitForm from "@/components/produits/ProduitForm";
-import { lireReferences } from "@/services/reference.service";
 
 export default async function ModifierProduitPage({
   params,
@@ -9,11 +12,13 @@ export default async function ModifierProduitPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const produit = await getProduitById(Number(id));
+  const [produit, categories, types] = await Promise.all([
+    getProduitById(Number(id)),
+    getCategoriesAvecFamilles(),
+    getTypesProduit(),
+  ]);
 
   if (!produit) notFound();
-
-  const { familles, categories, types } = lireReferences();
 
   return (
     <div className="mx-auto max-w-lg space-y-6">
@@ -23,12 +28,7 @@ export default async function ModifierProduitPage({
       </header>
 
       <div className="rounded-lg border border-slate-200 bg-white p-6">
-        <ProduitForm
-          produit={produit}
-          familles={familles}
-          categories={categories}
-          types={types}
-        />
+        <ProduitForm categories={categories} types={types} produit={produit} />
       </div>
     </div>
   );
