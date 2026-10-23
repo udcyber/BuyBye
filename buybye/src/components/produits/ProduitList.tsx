@@ -1,13 +1,18 @@
 import Link from "next/link";
-import { Pencil } from "lucide-react";
+import { Heart, Pencil, ShoppingCart } from "lucide-react";
 import type { Produit } from "@/types";
 import ProduitCard from "@/components/produits/ProduitCard";
 import DeleteProduitButton from "@/components/produits/DeleteProduitButton";
+import { ajouterAchat } from "@/actions/achat.actions";
+import { ajouterEnvie } from "@/actions/envie.actions";
 
 type Props = {
   produits: Produit[];
   avecActions?: boolean;
 };
+
+const bouton =
+  "flex items-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-emerald-600";
 
 export default function ProduitList({ produits, avecActions = false }: Props) {
   if (produits.length === 0) {
@@ -27,14 +32,37 @@ export default function ProduitList({ produits, avecActions = false }: Props) {
           </div>
 
           {avecActions && (
-            <div className="flex items-center gap-2">
-              <Link
-                href={`/produits/${produit.id}/modifier`}
-                className="flex items-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-emerald-600"
-              >
+            <div className="flex flex-wrap items-center gap-2">
+              <form action={ajouterAchat}>
+                <input type="hidden" name="produitId" value={produit.id} />
+                <input type="hidden" name="quantite" value="1" />
+                <button
+                  type="submit"
+                  className={bouton}
+                  aria-label={`J'ai acheté ${produit.nom}`}
+                >
+                  <ShoppingCart size={16} aria-hidden="true" />
+                  Acheté
+                </button>
+              </form>
+
+              <form action={ajouterEnvie}>
+                <input type="hidden" name="produitId" value={produit.id} />
+                <button
+                  type="submit"
+                  className={bouton}
+                  aria-label={`Ajouter ${produit.nom} aux envies`}
+                >
+                  <Heart size={16} aria-hidden="true" />
+                  Envie
+                </button>
+              </form>
+
+              <Link href={`/produits/${produit.id}/modifier`} className={bouton}>
                 <Pencil size={16} aria-hidden="true" />
                 Modifier
               </Link>
+
               <DeleteProduitButton
                 produitId={produit.id}
                 produitNom={produit.nom}

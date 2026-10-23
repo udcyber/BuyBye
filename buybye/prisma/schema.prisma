@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int      @id @default(autoincrement())
+  nom            String
+  email          String   @unique
+  motDePasseHash String
+  createdAt      DateTime @default(now())
+
+  produits     Produit[]
+  typesProduit TypeProduit[]
+  achats       Achat[]
+  envies       Envie[]
+
+  @@map("utilisateur")
+}
+
+model Categorie {
+  id       Int       @id @default(autoincrement())
+  code     String    @unique
+  nom      String
+  familles Famille[]
+
+  @@map("categorie")
+}
+
+model Famille {
+  id          Int       @id @default(autoincrement())
+  nom         String
+  categorieId Int
+  categorie   Categorie @relation(fields: [categorieId], references: [id])
+  produits    Produit[]
+
+  @@unique([categorieId, nom])
+  @@map("famille")
+}
+
+model TypeProduit {
+  id       Int       @id @default(autoincrement())
+  nom      String
+  userId   Int
+  user     User      @relation(fields: [userId], references: [id])
+  produits Produit[]
+
+  @@unique([userId, nom])
+  @@map("type_produit")
+}
+
+model Produit {
+  id            Int          @id @default(autoincrement())
+  nom           String
+  prix          Decimal      @db.Decimal(10, 2)
+  deletedAt     DateTime?
+  userId        Int
+  familleId     Int
+  typeProduitId Int?
+  user          User         @relation(fields: [userId], references: [id])
+  famille       Famille      @relation(fields: [familleId], references: [id])
+  typeProduit   TypeProduit? @relation(fields: [typeProduitId], references: [id])
+  achats        Achat[]
+  envies        Envie[]
+
+  @@index([userId, deletedAt])
+  @@map("produit")
+}
+
+model Achat {
+  id           Int      @id @default(autoincrement())
+  quantite     Int
+  prixUnitaire Decimal  @db.Decimal(10, 2)
+  dateAchat    DateTime @db.Date
+  userId       Int
+  produitId    Int
+  user         User     @relation(fields: [userId], references: [id])
+  produit      Produit  @relation(fields: [produitId], references: [id])
+
+  @@index([userId, dateAchat])
+  @@map("liste_achat")
+}
+
+model Envie {
+  id        Int      @id @default(autoincrement())
+  dateAjout DateTime @default(now())
+  userId    Int
+  produitId Int
+  user      User     @relation(fields: [userId], references: [id])
+  produit   Produit  @relation(fields: [produitId], references: [id])
+
+  @@index([userId])
+  @@map("liste_envie")
+}

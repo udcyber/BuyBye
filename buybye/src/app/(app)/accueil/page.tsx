@@ -48,7 +48,7 @@ export default async function AccueilPage() {
                 </p>
               </div>
               <p className="font-semibold">
-                {formatPrix(achat.produit.prix * achat.quantite)}
+                {formatPrix(achat.prixUnitaire * achat.quantite)}
               </p>
             </li>
           ))}
