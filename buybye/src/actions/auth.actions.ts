@@ -4,7 +4,6 @@ import argon2 from "argon2";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { ouvrirSession } from "@/lib/auth";
-export { lireSession } from "@/lib/auth";
 
 
 export async function inscrire(nom: string, email: string, motDePasse: string) {
