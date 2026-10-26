@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { lireSession } from "@/actions/auth.actions";
+import { lireSession } from "@/lib/auth";
 
 export default async function AppLayout({
   children,

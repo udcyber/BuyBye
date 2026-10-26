@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { inscrire } from "@/actions/auth.actions";
+import SwitchVisible from "@/components/auth/SwitchVisible"
 
 const champ =
   "mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus-visible:outline-2 focus-visible:outline-emerald-600";
@@ -73,40 +74,28 @@ export default function RegisterForm() {
       </div>
 
       <div>
-        <label
-          htmlFor="motDePasse"
-          className="text-sm font-medium text-slate-700"
-        >
+        <label htmlFor="motDePasse" className="text-sm font-medium text-slate-700">
           Mot de passe (6 à 72 caractères)
         </label>
-        <input
+        <SwitchVisible
           id="motDePasse"
           name="motDePasse"
-          type="password"
-          required
+          autoComplete="password"
           minLength={6}
           maxLength={72}
-          autoComplete="new-password"
-          className={champ}
         />
       </div>
 
       <div>
-        <label
-          htmlFor="confirmation"
-          className="text-sm font-medium text-slate-700"
-        >
+        <label htmlFor="confirmation" className="text-sm font-medium text-slate-700">
           Confirmer le mot de passe
         </label>
-        <input
+        <SwitchVisible
           id="confirmation"
           name="confirmation"
-          type="password"
-          required
+          autoComplete="new-password"
           minLength={6}
           maxLength={72}
-          autoComplete="new-password"
-          className={champ}
         />
       </div>
 

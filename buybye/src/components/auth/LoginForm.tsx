@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { connecter } from "@/actions/auth.actions";
+import SwitchVisible from "@/components/auth/SwitchVisible";
 
 const champ =
   "mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus-visible:outline-2 focus-visible:outline-emerald-600";
@@ -16,10 +17,9 @@ export default function LoginForm() {
     const donnees = new FormData(e.currentTarget);
     const email = String(donnees.get("email") ?? "").trim();
     const motDePasse = String(donnees.get("motDePasse") ?? "");
-    const emailValide = /^.+@.+\..+$/.test(email);
+    const emailValide = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i.test(email);
     // Regex Syntax:
         // ^   = start of the text
-        // .+  = at least 1 character
         // @   = the required @
         // \.  = the required dot (.)
         // $   = end of the text
@@ -54,23 +54,13 @@ export default function LoginForm() {
           className={champ}
         />
       </div>
+      <SwitchVisible
+        id="motDePasse"
+        name="motDePasse"
+        label= "Mot de passe"
+        autoComplete="current-password"
+       />
 
-      <div>
-        <label
-          htmlFor="motDePasse"
-          className="text-sm font-medium text-slate-700"
-        >
-          Mot de passe
-        </label>
-        <input
-          id="motDePasse"
-          name="motDePasse"
-          type="password"
-          required
-          autoComplete="current-password"
-          className={champ}
-        />
-      </div>
       {erreur && (
         <p role="alert" className="text-sm font-medium text-red-700">
           {erreur}

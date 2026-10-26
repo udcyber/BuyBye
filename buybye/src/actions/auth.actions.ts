@@ -3,31 +3,27 @@
 import argon2 from "argon2";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
-import { createHmac } from "crypto";
-
-  function signature(id: number) {
-    const secret = process.env.AUTH_SECRET;
-    if (!secret) {
-      throw new Error("AUTH_SECRET manquant");
-    }
-    return createHmac("sha256", secret).update(String(id)).digest("hex");
-  }
-
-  async function ouvrirSession(id: number) {
-    const session = await cookies();
-    session.set("session", `${id}.${signature(id)}`, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7,
-    });
-  }
+import { ouvrirSession } from "@/lib/auth";
 
 
 export async function inscrire(nom: string, email: string, motDePasse: string) {
+  const nomPseudo = nom.trim().replace(/ +/g, " ");
+    // " +"  = one space or more
+    // g     = means here: if " " is found anywhere in the text
+  const nomValide = /^[\p{L}0-9 '-]+$/u.test(nomPseudo);
+    // \p{L}  = accepts all small print, big print, accents
+  if (nomPseudo.length < 2 || nomPseudo.length > 12 || nomValide === false) {
+    return { ok: false, code: "nom" };
+  }
+  
   const emailPropre = email.trim().toLowerCase();
   const emailValide = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(emailPropre);
+    // Regex Syntax:
+        // ^   = start of the text
+        // @   = the required @
+        // \.  = the required dot (.)
+        // $   = end of the text
+        // for instance: text@text.text
   if (emailValide === false) {
     return { ok: false, code: "email" };
   }
@@ -63,7 +59,7 @@ export async function inscrire(nom: string, email: string, motDePasse: string) {
 
   const compte = await prisma.user.create({
     data: {
-      nom,
+      nom: nomPseudo,
       email: emailPropre,
       motDePasseHash: motDePasseHashe,
     },
@@ -96,38 +92,6 @@ export async function connecter(email: string, motDePasse: string) {
 
   await ouvrirSession(user.id);
   return { ok: true };
-}
-
-export async function lireSession() {
-  const session = await cookies();
-  const cookieValue = session.get("session")?.value;
-
-  if (cookieValue === undefined) {
-    return null;
-  }
-
-  const cookieSplit = cookieValue.split(".");
-  const idTexte = cookieSplit[0];
-  const signatureCookie = cookieSplit[1];
-  const id = Number(idTexte);
-
-  if (signatureCookie !== signature(id)) {
-    return null;
-  }
-
-  const compte = await prisma.user.findUnique({
-    where: { id },
-  });
-
-  if (compte === null) {
-    return null;
-  }
-
-  return {
-    id: compte.id,
-    nom: compte.nom,
-    email: compte.email,
-  };
 }
 
 export async function fermerSession() {
