@@ -7,8 +7,23 @@ import { ouvrirSession } from "@/lib/auth";
 
 
 export async function inscrire(nom: string, email: string, motDePasse: string) {
+  const nomPseudo = nom.trim().replace(/ +/g, " ");
+    // " +"  = one space or more
+    // g     = means here: if " " is found anywhere in the text
+  const nomValide = /^[\p{L}0-9 '-]+$/u.test(nomPseudo);
+    // \p{L}  = accepts all small print, big print, accents
+  if (nomPseudo.length < 2 || nomPseudo.length > 12 || nomValide === false) {
+    return { ok: false, code: "nom" };
+  }
+  
   const emailPropre = email.trim().toLowerCase();
   const emailValide = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(emailPropre);
+    // Regex Syntax:
+        // ^   = start of the text
+        // @   = the required @
+        // \.  = the required dot (.)
+        // $   = end of the text
+        // for instance: text@text.text
   if (emailValide === false) {
     return { ok: false, code: "email" };
   }
@@ -44,7 +59,7 @@ export async function inscrire(nom: string, email: string, motDePasse: string) {
 
   const compte = await prisma.user.create({
     data: {
-      nom,
+      nom: nomPseudo,
       email: emailPropre,
       motDePasseHash: motDePasseHashe,
     },
