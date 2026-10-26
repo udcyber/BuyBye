@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LogIn, LogOut } from "lucide-react";
+import { fermerSession } from "@/actions/auth.actions";
 
 const style =
   "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-emerald-600";
@@ -14,8 +15,8 @@ export default function LoginButton({
 }) {
   const router = useRouter();
 
-  function deconnexion() {
-    // TODO : remplacer par signOut() d'Auth.js
+  async function deconnexion() {
+    await fermerSession();
     router.push("/");
   }
 
