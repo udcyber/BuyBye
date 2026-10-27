@@ -30,13 +30,15 @@ export default function RegisterForm() {
 
     if (!resultat.ok) {
       const messages: { [clef: string]: string } = {
+        nom: "Le nom doit contenir entre 2 à 12 caractères : lettres, chiffres, espace, tiret ou apostrophe.",
         email: "Adresse e-mail invalide.",
         longueur: "Le mot de passe doit contenir entre 6 et 72 caractères.",
         caracteres:
           "Une minuscule, une majuscule, un chiffre et un caractère spécial (!@#$%^&*_+=?.-).",
         pris: "Cette adresse e-mail est déjà utilisée.",
       };
-      setErreur(messages[resultat.code] ?? "Inscription refusée.");
+      const code = resultat.code ?? "";
+      setErreur(messages[code] ?? "Inscription refusée.");
       return;
     }
 
