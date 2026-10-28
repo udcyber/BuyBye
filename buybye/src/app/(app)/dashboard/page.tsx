@@ -1,6 +1,7 @@
 import { lireBudget, lireStats, lireTotalEnvies } from "@/services/stats.service";
 import { formatPrix } from "@/lib/utils";
 import StatsCards from "@/components/dashboard/StatsCards";
+import { enregistrerBudget } from "@/actions/budget.actions";
 
 type Props = {
   searchParams: Promise<{ mois?: string }>;
@@ -62,6 +63,28 @@ export default async function DashboardPage({ searchParams }: Props) {
               ? `Il reste ${formatPrix(reste)} sur ${formatPrix(budget)}.`
               : `Vous avez dépassé le budget de ${formatPrix(Math.abs(reste))}.`}
         </p>
+        <form action={enregistrerBudget} className="mt-3 flex items-center gap-2">
+          <input type="hidden" name="mois" value={mois} />
+          <label htmlFor="montant" className="text-sm font-medium text-slate-700">
+            Budget
+          </label>
+          <input
+            id="montant"
+            name="montant"
+            type="number"
+            min="0"
+            step="0.01"
+            required
+            defaultValue={budget === 0 ? "" : budget}
+            className="w-28 rounded-md border border-slate-300 px-3 py-2 text-sm"
+          />
+          <button
+            type="submit"
+            className="rounded-md bg-emerald-700 px-3 py-2 text-sm font-medium text-white"
+          >
+            Enregistrer
+          </button>
+        </form>
       </header>
 
       <StatsCards
