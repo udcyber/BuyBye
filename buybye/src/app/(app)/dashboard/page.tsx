@@ -1,7 +1,9 @@
-import { lireBudget, lireStats, lireTotalEnvies } from "@/services/stats.service";
+import { lireBudget, lirePlafonds, lireStats, lireTotalEnvies } from "@/services/stats.service";
 import { formatPrix } from "@/lib/utils";
 import StatsCards from "@/components/dashboard/StatsCards";
 import { enregistrerBudget } from "@/actions/budget.actions";
+import { enregistrerPlafond } from "@/actions/plafond.actions";
+import { getCategoriesAvecFamilles } from "@/services/reference.service";
 
 type Props = {
   searchParams: Promise<{ mois?: string }>;
@@ -17,7 +19,9 @@ export default async function DashboardPage({ searchParams }: Props) {
   const mois = /^\d{4}-\d{2}$/.test(demande) ? demande : moisActuel();
   const stats = await lireStats(mois);
   const totalEnvies = await lireTotalEnvies();
+  const plafonds = await lirePlafonds();
   const budget = await lireBudget(mois);
+  const categories = await getCategoriesAvecFamilles();
   const reste = budget - stats.total;
   const maxCategorie = stats.parCategorie[0]?.montant ?? 0;
 
@@ -86,7 +90,43 @@ export default async function DashboardPage({ searchParams }: Props) {
           </button>
         </form>
       </header>
-
+      <section className="rounded-lg border border-slate-200 bg-white p-5">
+        <h2 className="text-lg font-semibold">Plafond par catégorie</h2>
+        <form action={enregistrerPlafond} className="mt-3 flex items-center gap-2">
+          <select
+            name="categorieId"
+            required
+            className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+          >
+            {categories.map((categorie) => (
+              <option key={categorie.id} value={categorie.id}>
+                {categorie.nom}
+              </option>
+            ))}
+          </select>
+          <input
+            name="montantPlafond"
+            type="number"
+            min="0"
+            step="0.01"
+            required
+            className="w-28 rounded-md border border-slate-300 px-3 py-2 text-sm"
+          />
+          <button
+            type="submit"
+            className="rounded-md bg-emerald-700 px-3 py-2 text-sm font-medium text-white"
+          >
+            Enregistrer
+          </button>
+        </form>
+        <ul className="mt-3 text-sm">
+          {plafonds.map((plafond) => (
+            <li key={plafond.categorieId}>
+              {plafond.categorie} : {formatPrix(plafond.montant)}
+            </li>
+          ))}
+        </ul>
+      </section>
       <StatsCards
         cartes={[
           { label: "Total dépensé", valeur: formatPrix(stats.total) },

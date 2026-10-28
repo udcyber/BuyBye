@@ -52,3 +52,17 @@ export async function lireBudget(mois: string) {
 
   return budget.montant.toNumber();
 }
+
+export async function lirePlafonds() {
+  const userId = await getCurrentUserId();
+  const lignes = await prisma.plafond.findMany({
+    where: { userId },
+    include: { categorie: true },
+  });
+
+  return lignes.map((ligne) => ({
+    categorieId: ligne.categorieId,
+    categorie: ligne.categorie.nom,
+    montant: ligne.montant.toNumber(),
+  }));
+}

@@ -19,6 +19,7 @@ model User {
   achats       Achat[]
   envies       Envie[]
   budgets       Budget[]
+  plafonds      Plafond[]
 
   @@map("utilisateur")
 }
@@ -28,6 +29,7 @@ model Categorie {
   code     String    @unique
   nom      String
   familles Famille[]
+  plafonds Plafond[]
 
   @@map("categorie")
 }
@@ -108,4 +110,16 @@ id      Int     @id @default(autoincrement())
 
   @@unique([userId, mois])
   @@map("budget")
+}
+
+model Plafond {
+  id          Int       @id @default(autoincrement())
+  montant     Decimal   @db.Decimal(10, 2)
+  userId      Int
+  categorieId Int
+  user        User      @relation(fields: [userId], references: [id])
+  categorie   Categorie @relation(fields: [categorieId], references: [id])
+
+  @@unique([userId, categorieId])
+  @@map("plafond")    
 }
