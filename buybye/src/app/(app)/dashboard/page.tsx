@@ -1,4 +1,4 @@
-import { lireStats } from "@/services/stats.service";
+import { lireBudget, lireStats, lireTotalEnvies } from "@/services/stats.service";
 import { formatPrix } from "@/lib/utils";
 import StatsCards from "@/components/dashboard/StatsCards";
 
@@ -15,11 +15,26 @@ export default async function DashboardPage({ searchParams }: Props) {
   const demande = params.mois ?? "";
   const mois = /^\d{4}-\d{2}$/.test(demande) ? demande : moisActuel();
   const stats = await lireStats(mois);
+  const totalEnvies = await lireTotalEnvies();
+  const budget = await lireBudget(mois);
+  const reste = budget - stats.total;
   const maxCategorie = stats.parCategorie[0]?.montant ?? 0;
 
   return (
     <div className="space-y-8">
       <header>
+        <section className="rounded-lg border border-slate-200 bg-white p-5">
+        <h2 className="text-lg font-semibold">Achats et envies</h2>
+        <p className="mt-2 text-slate-700">
+            Achats du mois : {formatPrix(stats.total)}. Liste d'envies :{" "}
+            {formatPrix(totalEnvies)}.
+        </p>
+        <p className="mt-1 text-slate-600">
+            {totalEnvies === 0
+            ? "Aucune envie pour le moment."
+            : `Si vous achetiez toute la liste, le mois passerait à ${formatPrix(stats.total + totalEnvies)}.`}
+        </p>
+        </section>
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <p className="mt-1 text-slate-600">Achats du mois {mois}.</p>
         <form method="get" className="mt-4 flex items-center gap-2">
@@ -40,6 +55,13 @@ export default async function DashboardPage({ searchParams }: Props) {
             Voir
           </button>
         </form>
+        <p className="mt-3 text-slate-700">
+          {budget === 0
+            ? "Aucun budget enregistré pour ce mois."
+            : reste >= 0
+              ? `Il reste ${formatPrix(reste)} sur ${formatPrix(budget)}.`
+              : `Vous avez dépassé le budget de ${formatPrix(Math.abs(reste))}.`}
+        </p>
       </header>
 
       <StatsCards

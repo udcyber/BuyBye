@@ -1,4 +1,6 @@
-import { getAchats } from "@/services/produit.service";
+import { getAchats, getEnvies } from "@/services/produit.service";
+import { prisma } from "@/lib/prisma";
+import { getCurrentUserId } from "@/services/user.service";
 
 export async function lireStats(mois: string) {
   const listeComplete = await getAchats();
@@ -25,4 +27,28 @@ export async function lireStats(mois: string) {
     montantMoyen: liste.length > 0 ? total / liste.length : 0,
     parCategorie,
   };
+}
+
+export async function lireTotalEnvies() {
+  const envies = await getEnvies();
+  let total = 0;
+
+  for (const envie of envies) {
+    total += envie.produit.prix
+  }
+
+  return total;
+}
+
+export async function lireBudget(mois: string) {
+  const userId = await getCurrentUserId();
+  const budget = await prisma.budget.findUnique({
+    where: { userId_mois: { userId, mois } },
+  });
+
+  if (!budget) {
+    return 0;
+  }
+
+  return budget.montant.toNumber();
 }
