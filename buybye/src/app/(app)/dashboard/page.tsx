@@ -19,9 +19,9 @@ export default async function DashboardPage({ searchParams }: Props) {
   const mois = /^\d{4}-\d{2}$/.test(demande) ? demande : moisActuel();
   const stats = await lireStats(mois);
   const totalEnvies = await lireTotalEnvies();
-  const plafonds = await lirePlafonds();
   const budget = await lireBudget(mois);
   const categories = await getCategoriesAvecFamilles();
+  const plafonds = await lirePlafonds();
   const reste = budget - stats.total;
   const maxCategorie = stats.parCategorie[0]?.montant ?? 0;
 
@@ -29,16 +29,16 @@ export default async function DashboardPage({ searchParams }: Props) {
     <div className="space-y-8">
       <header>
         <section className="rounded-lg border border-slate-200 bg-white p-5">
-        <h2 className="text-lg font-semibold">Achats et envies</h2>
-        <p className="mt-2 text-slate-700">
+          <h2 className="text-lg font-semibold">Achats et envies</h2>
+          <p className="mt-2 text-slate-700">
             Achats du mois : {formatPrix(stats.total)}. Liste d'envies :{" "}
             {formatPrix(totalEnvies)}.
-        </p>
-        <p className="mt-1 text-slate-600">
+          </p>
+          <p className="mt-1 text-slate-600">
             {totalEnvies === 0
-            ? "Aucune envie pour le moment."
-            : `Si vous achetiez toute la liste, le mois passerait à ${formatPrix(stats.total + totalEnvies)}.`}
-        </p>
+              ? "Aucune envie pour le moment."
+              : `Si vous achetiez toute la liste, le mois passerait à ${formatPrix(stats.total + totalEnvies)}.`}
+          </p>
         </section>
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <p className="mt-1 text-slate-600">Achats du mois {mois}.</p>
@@ -120,11 +120,22 @@ export default async function DashboardPage({ searchParams }: Props) {
           </button>
         </form>
         <ul className="mt-3 text-sm">
-          {plafonds.map((plafond) => (
-            <li key={plafond.categorieId}>
-              {plafond.categorie} : {formatPrix(plafond.montant)}
-            </li>
-          ))}
+          {plafonds.map((plafond) => {
+            const depense =
+              stats.parCategorie.find((ligne) => ligne.categorie === plafond.categorie)
+                ?.montant ?? 0;
+            const depasse = depense > plafond.montant;
+
+            return (
+              <li
+                key={plafond.categorieId}
+                className={depasse ? "text-red-700" : ""}
+              >
+                {plafond.categorie} : {formatPrix(plafond.montant)}
+                {depasse ? ` — dépassé, ${formatPrix(depense)} dépensés` : ""}
+              </li>
+            );
+          })}
         </ul>
       </section>
       <StatsCards
