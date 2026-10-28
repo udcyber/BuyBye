@@ -38,21 +38,27 @@ export default async function AccueilPage() {
             Voir tout l'historique
           </Link>
         </div>
-        <ul className="divide-y divide-slate-200 rounded-lg border border-slate-200 bg-white">
-          {derniersAchats.map((achat) => (
-            <li key={achat.id} className="flex items-center justify-between p-4">
-              <div>
-                <p className="font-medium">{achat.produit.nom}</p>
-                <p className="text-sm text-slate-500">
-                  {formatDate(achat.date)} – quantité : {achat.quantite}
+        {derniersAchats.length === 0 ? (
+          <p className="rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center text-slate-600">
+            Aucun achat pour le moment.
+          </p>
+        ) : (
+          <ul className="divide-y divide-slate-200 rounded-lg border border-slate-200 bg-white">
+            {derniersAchats.map((achat) => (
+              <li key={achat.id} className="flex items-center justify-between p-4">
+                <div>
+                  <p className="font-medium">{achat.produit.nom}</p>
+                  <p className="text-sm text-slate-500">
+                    {formatDate(achat.date)} – quantité : {achat.quantite}
+                  </p>
+                </div>
+                <p className="font-semibold">
+                  {formatPrix(achat.prixUnitaire * achat.quantite)}
                 </p>
-              </div>
-              <p className="font-semibold">
-                {formatPrix(achat.prixUnitaire * achat.quantite)}
-              </p>
-            </li>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       <Link
