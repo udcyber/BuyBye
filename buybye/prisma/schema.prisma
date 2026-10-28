@@ -18,6 +18,7 @@ model User {
   typesProduit TypeProduit[]
   achats       Achat[]
   envies       Envie[]
+  budgets       Budget[]
 
   @@map("utilisateur")
 }
@@ -96,4 +97,15 @@ model Envie {
 
   @@index([userId])
   @@map("liste_envie")
+}
+
+model Budget {
+id      Int     @id @default(autoincrement())
+  mois    String
+  montant Decimal @db.Decimal(10, 2)
+  userId  Int
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@unique([userId, mois])
+  @@map("budget")
 }
