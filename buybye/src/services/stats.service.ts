@@ -1,7 +1,8 @@
 import { getAchats } from "@/services/produit.service";
 
-export async function lireStats() {
-  const liste = await getAchats();
+export async function lireStats(mois: string) {
+  const listeComplete = await getAchats();
+  const liste = listeComplete.filter((achat) => achat.date.startsWith(mois));
   const montantsParCategorie = new Map<string, number>();
   let total = 0;
 
