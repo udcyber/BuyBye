@@ -194,11 +194,12 @@ export default async function DashboardPage({ searchParams }: Props) {
           }))}
         />
         <DiagrammeAnneau
-          titre="Dépenses par famille"
-          parties={stats.parFamille.map((ligne) => ({
+        titre="Dépenses par famille"
+        avecTrou
+        parties={stats.parFamille.map((ligne) => ({
             nom: ligne.famille,
             montant: ligne.montant,
-          }))}
+        }))}
         />
       </div>
       <CourbeMois points={parMois} />
