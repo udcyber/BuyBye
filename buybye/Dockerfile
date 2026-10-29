@@ -15,4 +15,4 @@ RUN npx prisma generate
 
 EXPOSE 3000
 
-CMD ["npm", "run", "dev", "--", "-H", "0.0.0.0"]
+CMD ["sh", "docker-entrypoint.sh"]

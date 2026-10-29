@@ -12,9 +12,9 @@ type Props = {
 };
 
 const bouton =
-  "flex items-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-emerald-600";
+  "flex cursor-pointer items-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-emerald-600 active:scale-95";
 
-export default function ProduitList({ produits, avecActions = false }: Props) {
+  export default function ProduitList({ produits, avecActions = false }: Props) {
   if (produits.length === 0) {
     return (
       <p className="rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center text-slate-600">
@@ -38,7 +38,7 @@ export default function ProduitList({ produits, avecActions = false }: Props) {
                 <input type="hidden" name="quantite" value="1" />
                 <button
                   type="submit"
-                  className={bouton}
+                  className={`${bouton} hover:border-emerald-700 hover:text-emerald-800`}
                   aria-label={`J'ai acheté ${produit.nom}`}
                 >
                   <ShoppingCart size={16} aria-hidden="true" />
@@ -50,7 +50,7 @@ export default function ProduitList({ produits, avecActions = false }: Props) {
                 <input type="hidden" name="produitId" value={produit.id} />
                 <button
                   type="submit"
-                  className={bouton}
+                  className={`${bouton} hover:border-rose-400 hover:text-rose-700`}
                   aria-label={`Ajouter ${produit.nom} aux envies`}
                 >
                   <Heart size={16} aria-hidden="true" />
@@ -58,7 +58,7 @@ export default function ProduitList({ produits, avecActions = false }: Props) {
                 </button>
               </form>
 
-              <Link href={`/produits/${produit.id}/modifier`} className={bouton}>
+              <Link href={`/produits/${produit.id}/modifier`} className={`${bouton} hover:border-yellow-1800 hover:bg-yellow-100 hover:text-yellow-950`}>
                 <Pencil size={16} aria-hidden="true" />
                 Modifier
               </Link>

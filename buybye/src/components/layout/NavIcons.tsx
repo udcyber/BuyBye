@@ -31,7 +31,6 @@ export default function NavIcons() {
               }`}
             >
               <Icon size={18} aria-hidden="true" />
-              {/* sur mobile : icône seule */}
               <span className="hidden lg:inline">{label}</span>
               <span className="sr-only lg:hidden">{label}</span>
             </Link>

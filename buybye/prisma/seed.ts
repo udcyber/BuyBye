@@ -53,7 +53,7 @@ async function seedReference() {
   }
 }
 
-const EMAIL_DEMO = "demo@buybye.local";
+const EMAIL_DEMO = "@buybye.demo";
 
 async function seedDemo() {
   const existant = await prisma.user.findUnique({ where: { email: EMAIL_DEMO } });
@@ -67,7 +67,7 @@ async function seedDemo() {
     data: {
       nom: "Demo",
       email: EMAIL_DEMO,
-      motDePasseHash: await argon2.hash("demo1234", { type: argon2.argon2id }),
+      motDePasseHash: await argon2.hash("Demo1234!", { type: argon2.argon2id }),
     },
   });
 
