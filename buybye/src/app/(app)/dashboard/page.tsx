@@ -1,6 +1,8 @@
-import { lireBudget, lirePlafonds, lireStats, lireTotalEnvies } from "@/services/stats.service";
+import { lireBudget, lireDepensesParMois, lirePlafonds, lireStats, lireTotalEnvies } from "@/services/stats.service";
 import { formatPrix } from "@/lib/utils";
 import StatsCards from "@/components/dashboard/StatsCards";
+import DiagrammeAnneau from "@/components/dashboard/DiagrammeAnneau";
+import CourbeMois from "@/components/dashboard/CourbeMois";
 import { enregistrerBudget } from "@/actions/budget.actions";
 import { enregistrerPlafond } from "@/actions/plafond.actions";
 import { getCategoriesAvecFamilles } from "@/services/reference.service";
@@ -18,6 +20,7 @@ export default async function DashboardPage({ searchParams }: Props) {
   const demande = params.mois ?? "";
   const mois = /^\d{4}-\d{2}$/.test(demande) ? demande : moisActuel();
   const stats = await lireStats(mois);
+  const parMois = await lireDepensesParMois(mois.slice(0, 4));
   const totalEnvies = await lireTotalEnvies();
   const budget = await lireBudget(mois);
   const categories = await getCategoriesAvecFamilles();
@@ -181,6 +184,24 @@ export default async function DashboardPage({ searchParams }: Props) {
           </ul>
         )}
       </section>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <DiagrammeAnneau
+          titre="Dépenses par catégorie"
+          parties={stats.parCategorie.map((ligne) => ({
+            nom: ligne.categorie,
+            montant: ligne.montant,
+          }))}
+        />
+        <DiagrammeAnneau
+          titre="Dépenses par famille"
+          parties={stats.parFamille.map((ligne) => ({
+            nom: ligne.famille,
+            montant: ligne.montant,
+          }))}
+        />
+      </div>
+      <CourbeMois points={parMois} />
     </div>
   );
 }
