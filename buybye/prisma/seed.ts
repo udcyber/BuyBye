@@ -53,7 +53,7 @@ async function seedReference() {
   }
 }
 
-const EMAIL_DEMO = "@buybye.demo";
+const EMAIL_DEMO = "demo@buybye.local";
 
 async function seedDemo() {
   const existant = await prisma.user.findUnique({ where: { email: EMAIL_DEMO } });
