@@ -32,6 +32,10 @@ export default function LoginForm() {
 
     const resultat = await connecter(email, motDePasse);
     if (!resultat.ok) {
+      if ("code" in resultat && resultat.code === "bloque") {
+        setErreur("Trop de tentatives. Réessayez dans 15 minutes.");
+        return;
+        }
       setErreur("E-mail ou mot de passe incorrect.");
       return;
     }

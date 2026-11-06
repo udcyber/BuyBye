@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
-import { createHmac } from "crypto";
+import { createHmac, randomBytes } from "crypto";
 
 function signature(valeur: string) {
   const secret = process.env.AUTH_SECRET;
@@ -13,7 +13,13 @@ function signature(valeur: string) {
 export async function ouvrirSession(id: number) {
   const session = await cookies();
   const fin = Date.now() + 7 * 24 * 60 * 60 * 1000;
-  const valeur = `${id}.${fin}`;
+  const jeton = randomBytes(32).toString("hex");
+  const valeur = `${id}.${fin}.${jerton}`;
+
+  await prisma.user.update({
+    where: { id },
+    data: { jetonSession: jeton },
+  });
 
   session.set("session", `${valeur}.${signature(valeur)}`, {
     httpOnly: true,
@@ -33,15 +39,16 @@ export async function lireSession() {
   }
 
   const cookieSplit = cookieValue.split(".");
-  if (cookieSplit.length !== 3) {
+  if (cookieSplit.length !== 4) {
     return null;
   }
 
   const id = Number(cookieSplit[0]);
   const fin = Number(cookieSplit[1]);
-  const signatureCookie = cookieSplit[2];
+  const jeton = cookieSplit[2];
+  const signatureCookie = cookieSplit[3];
 
-  if (signatureCookie !== signature(`${id}.${fin}`)) {
+  if (signatureCookie !== signature(`${id}.${fin}.${jeton}`)) {
     return null;
   }
 
@@ -53,7 +60,7 @@ export async function lireSession() {
     where: { id },
   });
 
-  if (compte === null) {
+  if (compte === null || compte.jetonSession !== jeton) {
     return null;
   }
 

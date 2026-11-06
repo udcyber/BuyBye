@@ -3,7 +3,7 @@
 import argon2 from "argon2";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
-import { ouvrirSession } from "@/lib/auth";
+import { lireSession, ouvrirSession } from "@/lib/auth";
 
 export async function inscrire(nom: string, email: string, motDePasse: string) {
   const nomPseudo = nom.trim().replace(/ +/g, " ");
@@ -107,7 +107,6 @@ export async function inscrire(nom: string, email: string, motDePasse: string) {
 
 export async function connecter(email: string, motDePasse: string) {
   const emailPropre = email.trim().toLowerCase();
-  // Removes spaces and tabs around the email.
   const emailValide = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(emailPropre);
 
   if (emailValide === false) {
@@ -121,16 +120,55 @@ export async function connecter(email: string, motDePasse: string) {
     return { ok: false };
   }
 
+  if (user.bloqueEssaiPendant && user.bloqueEssaiPendant > new Date()) {
+    return { ok: false, code: "bloque" };
+  }
+
   const bon = await argon2.verify(user.motDePasseHash, motDePasse);
   if (!bon) {
+    const essaisRestants = (user.essaisRestants ?? 10) - 1;
+
+    if (essaisRestants <= 0) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          essaisRestants: 10,
+          bloqueEssaiPendant: new Date(Date.now() + 15 * 60 * 1000),
+          jetonSession String?
+        },
+      });
+      return { ok: false, code: "bloque" };
+    }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { essaisRestants },
+    });
     return { ok: false };
   }
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      essaisRestants: 10,
+      bloqueEssaiPendant: null,
+    },
+  });
 
   await ouvrirSession(user.id);
   return { ok: true };
 }
 
 export async function fermerSession() {
+  const compte = await lireSession();
+
+  if (compte) {
+    await prisma.user.update({
+      where: { id: compte.id },
+      data: { jetonSession: null },
+    });
+  }
+
   const session = await cookies();
   session.delete("session");
 }

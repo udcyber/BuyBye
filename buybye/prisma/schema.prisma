@@ -8,11 +8,14 @@ datasource db {
 }
 
 model User {
-  id             Int      @id @default(autoincrement())
-  nom            String
-  email          String   @unique
-  motDePasseHash String
-  createdAt      DateTime @default(now())
+  id                 Int      @id @default(autoincrement())
+  nom                String
+  email              String   @unique
+  motDePasseHash     String
+  essaisRestants     Int      @default(10)
+  bloqueEssaiPendant DateTime?
+  jetonSession       String?
+  createdAt          DateTime @default(now())
 
   produits     Produit[]
   typesProduit TypeProduit[]
