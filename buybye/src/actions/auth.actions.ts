@@ -3,7 +3,7 @@
 import argon2 from "argon2";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
-import { ouvrirSession } from "@/lib/auth";
+import { lireSession, ouvrirSession } from "@/lib/auth";
 
 export async function inscrire(nom: string, email: string, motDePasse: string) {
   const nomPseudo = nom.trim().replace(/ +/g, " ");
@@ -134,6 +134,7 @@ export async function connecter(email: string, motDePasse: string) {
         data: {
           essaisRestants: 10,
           bloqueEssaiPendant: new Date(Date.now() + 15 * 60 * 1000),
+          jetonSession String?
         },
       });
       return { ok: false, code: "bloque" };
@@ -159,6 +160,15 @@ export async function connecter(email: string, motDePasse: string) {
 }
 
 export async function fermerSession() {
+  const compte = await lireSession();
+
+  if (compte) {
+    await prisma.user.update({
+      where: { id: compte.id },
+      data: { jetonSession: null },
+    });
+  }
+
   const session = await cookies();
   session.delete("session");
 }
